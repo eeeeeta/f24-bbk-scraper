@@ -104,7 +104,7 @@ pub fn fetch_scoreboard(url: &str) -> Result<Vec<ScoreboardEntry>, Error> {
                                 entry.laps(Some(no));
                             }
                             else {
-                                warn!("couldn't parse result {}", li);
+                                warn!("couldn't parse result {}", &text[0..li]);
                             }
                         }
                     },
