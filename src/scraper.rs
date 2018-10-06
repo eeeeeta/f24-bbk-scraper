@@ -97,6 +97,14 @@ pub fn fetch_scoreboard(url: &str) -> Result<Vec<ScoreboardEntry>, Error> {
                             }
                         }
                     },
+                    x @ "result" => {
+                        let text = cell.inner_html();
+                        if let Some(li) = text.find('L') {
+                            if let Ok(no) = text[0..li].parse() {
+                                entry.laps(Some(pos));
+                            }
+                        }
+                    },
                     x @ "spd" | x @ "dist" => {
                         if let Ok(pos) = cell.inner_html().parse() {
                             match x {
@@ -121,11 +129,11 @@ pub fn fetch_scoreboard(url: &str) -> Result<Vec<ScoreboardEntry>, Error> {
                     "entrant" => {
                         entry.entrant(cell.inner_html());
                     },
-                    x @ "last" | x @ "best" => {
+                    x @ "last" | x @ "l-lap" | x @ "best" => {
                         let time = cell.inner_html();
                         match parse_lap_time(&time) {
                             Ok(lt) => {
-                                if x == "last" {
+                                if x == "last" || x == "l-lap" {
                                     entry.lap_last(Some(lt));
                                 }
                                 else {
