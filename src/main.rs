@@ -7,11 +7,13 @@ extern crate postgres;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
 extern crate toml;
+extern crate chrono;
 
 pub mod scraper;
 pub mod config;
 
 use self::config::Config;
+use chrono::Utc;
 use postgres::{Connection, TlsMode};
 
 fn main() {
@@ -36,11 +38,12 @@ fn main() {
                         let lap: i32 = ln as _;
                         if let Some(ll) = ent.lap_last {
                             let millis: i32 = ll.num_milliseconds() as _;
+                            let ts = Utc::now().naive_utc();
                             conn.execute("INSERT INTO laptimes
-                                          (race_id, car_id, team_num, team_name, entrant_name, lap_no, lap_time_ms)
-                                          VALUES ($1, $2, $3, $4, $5, $6, $7)
+                                          (race_id, car_id, team_num, team_name, entrant_name, lap_no, lap_time_ms, ts)
+                                          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                                           ON CONFLICT DO NOTHING",
-                                          &[&race.race_id, &team_id, &(ent.number as i32), &ent.team, &ent.entrant, &lap, &millis])
+                                          &[&race.race_id, &team_id, &(ent.number as i32), &ent.team, &ent.entrant, &lap, &millis, &ts])
                                 .unwrap();
                             times += 1;
                         }
