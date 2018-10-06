@@ -100,7 +100,7 @@ pub fn fetch_scoreboard(url: &str) -> Result<Vec<ScoreboardEntry>, Error> {
                     "result" => {
                         let text = cell.inner_html();
                         if let Some(li) = text.find('L') {
-                            if let Ok(no) = text[0..li].parse() {
+                            if let Ok(no) = text[0..li].trim().parse() {
                                 entry.laps(Some(no));
                             }
                             else {
