@@ -97,11 +97,14 @@ pub fn fetch_scoreboard(url: &str) -> Result<Vec<ScoreboardEntry>, Error> {
                             }
                         }
                     },
-                    x @ "result" => {
+                    "result" => {
                         let text = cell.inner_html();
                         if let Some(li) = text.find('L') {
                             if let Ok(no) = text[0..li].parse() {
                                 entry.laps(Some(no));
+                            }
+                            else {
+                                warn!("couldn't parse result {}", li);
                             }
                         }
                     },
